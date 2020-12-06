@@ -17,7 +17,8 @@ Square::Square(std::istream& is) {
     _type = "Square";
 }
 void Square::Input(std::istream& is) {
-    Square(is);
+    is >> this->_center >> this->_d;
+    _type = "Square";
 }
 Dot Square::getCenter() const {
     return this->_center;

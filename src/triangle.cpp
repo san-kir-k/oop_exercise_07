@@ -16,7 +16,8 @@ Triangle::Triangle(std::istream& is) {
     _type = "Triangle";
 }
 void Triangle::Input(std::istream& is) {
-    Triangle(is);
+    is >> this->_center >> this->_d;
+    _type = "Triangle";
 }
 Dot Triangle::getCenter() const {
     return this->_center;

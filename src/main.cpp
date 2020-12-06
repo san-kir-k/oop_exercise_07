@@ -4,123 +4,97 @@
 #include <sstream>
 #include <string>
 
-#include "octagon.hpp"
-#include "square.hpp"
-#include "triangle.hpp"
+#include "editor.hpp"
 
-// функция, которая вызывает для каждого элемента массива его 3 базовых метода
-void applyToVec(const std::vector<Figure*>& vec) {
-    for (auto v : vec) {
-        std::cout << ">>Next figure is " << v->getType() << ": " << std::endl;
-        std::cout << "Center: " << v->getCenter() << std::endl;
-        std::cout << "Figure coords: ";
-        v->print(std::cout);
-        std::cout << std::endl;
-        std::cout << "Area: " << v->getArea() << std::endl;
-    }
-}
-
-// считает суммарную площадь всех фигур в векторе
-double totalArea(const std::vector<Figure*>& vec) {
-    double result = 0.0;
-    for (auto v : vec) {
-        result += v->getArea();
-    }
-    return result;
-}
 // мануал
 void help() {
     std::cout << "Command -- Description\n" <<
-                "1 [idx] -- Display figure by index in vector\n" <<
-                "2 [1..3] -- Add figure (type 1 - oct, 2 - sq, 3 - tri)\n" <<
-                "3 -- Apply base methods to the entire vector\n" <<
-                "4 -- Calculate total area of figures in vector\n" << 
-                "5 [idx] -- Delete figure by index from vector\n" <<
-                "6 -- Display vector\n" << 
-                "7 -- Display help\n" <<
-                "8 -- End program" << std::endl;
+                "1 -- Create new document\n" <<
+                "2 <filename> -- Load document from file\n" <<
+                "3 <filename> -- Save document from file\n" <<
+                "4 <type> -- Create new figure (1 -- Octagon, 2 -- Square, 3 -- Triangle)\n" << 
+                "5 -- Delete last figure from vector\n" <<
+                "6 -- Display document\n" << 
+                "7 -- Undo last delete/create\n" <<
+                "8 <num> -- Switch document to page <num>\n" <<
+                "9 -- Display help\n" <<
+                "10 -- End program" << std::endl;
 }
 
 void mainLoop() {
     int command = 0, idx = 0, type = 0;
-    std::vector<Figure*> vec;
-    Figure* f;
+    Editor ed;
     std::string s;
+    std::string filename;
+    std::ifstream ifs;
+    std::ofstream ofs;
     while (std::cout << "Cmd: " && std::cin >> s) {
-        if (s.length() > 1) {
+        if (s.length() > 2) {
             std::cout << "Invalid command." << std::endl;
             continue;
         }
         std::stringstream ss(s);
         ss >> command;
-        if (command == 8)
+        if (command == 10)
             break;
         switch (command) {
             case 1:
-                std::cin >> idx;
-                if (idx < 0 || idx >= vec.size()) {
-                    std::cout << "Invalid index." << std::endl;
-                    break;
-                }
-                vec[idx]->print(std::cout);
-                std::cout << std::endl;
+                ed.createNewDoc();
                 break;
             case 2:
+                std::cin >> filename;
+                ifs.open(filename, std::ios::binary);
+                if (ifs.fail()) {
+                    std::cerr << "ERROR: Unable to open file " << filename << " in read mode\n";
+                    break;
+                }
+                ed.loadDoc(ifs);
+            case 3:
+                std::cin >> filename;
+                ofs.open(filename, std::ios::binary);
+                if (ofs.fail()) {
+                    std::cerr << "ERROR: Unable to open file " << filename << " in write mode\n";
+                    break;
+                }
+                ed.saveDoc(ofs);
+                break;
+            case 4:
                 std::cin >> type;
                 switch (type) {
                     case 1:
-                        f = new Octagon(std::cin);
-                        vec.push_back(f);
+                        ed.createPrimitive(std::cin, 'O');
                         break;
                     case 2:
-                        f = new Square(std::cin);
-                        vec.push_back(f);
+                        ed.createPrimitive(std::cin, 'S');
                         break;
                     case 3:
-                        f = new Triangle(std::cin);
-                        vec.push_back(f);
+                        ed.createPrimitive(std::cin, 'T');
                         break;
                     default:
                         std::cout << "Invalid type." << std::endl;
                         break;
                 }
                 break;
-            case 3:
-                applyToVec(vec);
-                break;
-            case 4:
-                std::cout << totalArea(vec) << std::endl;
-                break;
             case 5:
-                std::cin >> idx;
-                if (idx < 0 || idx >= vec.size()) {
-                    std::cout << "Invalid index." << std::endl;
-                    break;
-                }
-                f = vec[idx];
-                vec.erase(vec.begin() + idx);
-                // освобождаем память, чтоб не утеклало по памяти
-                delete f;
+                ed.deletePrimitive();
                 break;
             case 6:
-                std::cout << "=========START OF VECTOR=========" << std::endl;
-                for (auto v : vec) {
-                    v->print(std::cout);
-                    std::cout << std::endl;
-                }
-                std::cout << "==========END OF VECTOR==========" << std::endl;
+                ed.print();
                 break;
             case 7:
+                ed.undo();
+                break;
+            case 8:
+                std::cin >> idx;
+                ed.switchDoc(idx);
+                break;
+            case 9:
                 help();
                 break;
             default:
                 std::cout << "Invalid command!" << std::endl; 
                 break;
         }
-    }
-    // освобождаем память в векторе, чтобы не утекало
-    for (auto v : vec) {
-        delete v;
     }
 }
 

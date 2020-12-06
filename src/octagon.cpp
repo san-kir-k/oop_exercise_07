@@ -19,7 +19,8 @@ Dot Octagon::getCenter() const {
     return this->_center;
 }
 void Octagon::Input(std::istream& is) {
-    Octagon(is);
+    is >> this->_center >> this->_d;
+    _type = "Octagon";
 }
 void Octagon::print(std::ostream& os) const {
     std::vector<Dot> dots;
