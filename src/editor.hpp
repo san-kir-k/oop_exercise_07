@@ -23,8 +23,8 @@ class Editor {
         Editor(): saved(), page(-1) {};
         ~Editor();
         void createNewDoc();
-        bool loadDoc(std::ifstream& fs);
-        bool saveDoc(std::ofstream& fs);   
+        void loadDoc(std::ifstream& fs);
+        void saveDoc(std::ofstream& fs);   
         void createPrimitive(std::istream& is, char type);
         void deletePrimitive();
         void print();

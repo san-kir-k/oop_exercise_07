@@ -12,6 +12,7 @@ class Figure {
         // добавим метод getType(), чтобы при выводе видить, что за фигура перед нами
         virtual std::string getType() const { return _type; }
         // виртуальный деструктор, чтобы корректно вызывались деструкторы дочерних классов
+        virtual void getCoords(std::vector<Dot>& dots) const = 0;
         virtual ~Figure() = default;
     protected:
         std::string _type;

@@ -17,7 +17,7 @@ class Triangle: public Figure {
         void print(std::ostream& os) const override;
         double getArea() const override;
         std::string getType() const override;
-        void getCoords(std::vector<Dot>& dots) const;
+        void getCoords(std::vector<Dot>& dots) const override;
         ~Triangle() = default;
     private:
         Dot _center, _d;

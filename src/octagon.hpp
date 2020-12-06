@@ -17,7 +17,7 @@ class Octagon: public Figure {
         void print(std::ostream& os) const override;
         double getArea() const override;
         std::string getType() const override;
-        void getCoords(std::vector<Dot>& dots) const;
+        void getCoords(std::vector<Dot>& dots) const override;
         ~Octagon() = default;
     private:
         Dot _center, _d;

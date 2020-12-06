@@ -49,6 +49,8 @@ void mainLoop() {
                     break;
                 }
                 ed.loadDoc(ifs);
+                ifs.close();
+                break;
             case 3:
                 std::cin >> filename;
                 ofs.open(filename, std::ios::binary);
@@ -57,6 +59,7 @@ void mainLoop() {
                     break;
                 }
                 ed.saveDoc(ofs);
+                ofs.close();
                 break;
             case 4:
                 std::cin >> type;

@@ -18,11 +18,79 @@ void Editor::createNewDoc() {
     saved.push_back({});
     page++;
 }
-bool Editor::loadDoc(std::ifstream& fs) {
-
+void Editor::loadDoc(std::ifstream& fs) {
+    Dot center;
+    Dot node;
+    char type;
+    std::vector<Figure*> newDoc;
+    while (true) {
+        fs.read((char*)&type, sizeof(char));
+        if (type == 'E') {
+            break;
+        }
+        if (fs.bad()) {
+            std::cerr << "Unable to read from file\n";
+            return;
+        } 
+        fs.read((char*)&center, sizeof(Dot));
+        if (fs.bad()) {
+            std::cerr << "Unable to read from file\n";
+            return;
+        } 
+        fs.read((char*)&node, sizeof(Dot));
+        if (fs.bad()) {
+            std::cerr << "Unable to read from file\n";
+            return;
+        } 
+        Figure* f;
+        if (type == 'S') {
+            f = new Square(center, node);
+        } else if (type == 'O') {
+            f = new Octagon(center, node);
+        } else {
+            f = new Triangle(center, node);
+        }
+        newDoc.push_back(f);
+    }
+    createNewDoc();
+    docs[page] = newDoc;
 }
-bool Editor::saveDoc(std::ofstream& fs) {
-
+void Editor::saveDoc(std::ofstream& fs) {
+    for (auto f: docs[page]) {
+        std::vector<Dot> dots;
+        f->getCoords(dots);
+        Dot center = f->getCenter();
+        std::string type = f->getType();
+        char charType;
+        if (type == "Triangle") {
+            charType = 'T';
+        } else if (type == "Square") {
+            charType = 'S';
+        } else {
+            charType = 'O';
+        }
+        fs.write((char*)&charType, sizeof(char));
+        if (fs.bad()) {
+            std::cerr << "Unable to write in file\n";
+            return;
+        } 
+        fs.write((char*)&center, sizeof(Dot));
+        if (fs.bad()) {
+            std::cerr << "Unable to write in file\n";
+            return;
+        }
+        fs.write((char*)&dots[0], sizeof(Dot));
+        if (fs.bad()) {
+            std::cerr << "Unable to write in file\n";
+            return;
+        }   
+    }
+    char endOfFile = 'E';
+    fs.write((char*)&endOfFile, sizeof(char));
+    if (fs.bad()) {
+        std::cerr << "Unable to write in file\n";
+        return;
+    } 
 } 
 void Editor::createPrimitive(std::istream& is, char type) {
     if (docs.empty()) {
