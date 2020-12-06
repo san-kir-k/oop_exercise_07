@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <exception>
 
 #include "figure.hpp"
 #include "octagon.hpp"
@@ -29,5 +30,5 @@ class Editor {
         void deletePrimitive();
         void print();
         bool undo();
-        void switchDoc(size_t newPage);
+        void switchDoc(int newPage);
 };

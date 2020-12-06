@@ -1,6 +1,5 @@
 #include "editor.hpp"
 
-
 Editor::~Editor() {
     for (auto s: saved) {
         if (s.type == 'd') {
@@ -29,17 +28,17 @@ void Editor::loadDoc(std::ifstream& fs) {
             break;
         }
         if (fs.bad()) {
-            std::cerr << "Unable to read from file\n";
+            throw std::logic_error("Unable to read from file");
             return;
         } 
         fs.read((char*)&center, sizeof(Dot));
         if (fs.bad()) {
-            std::cerr << "Unable to read from file\n";
+            throw std::logic_error("Unable to read from file");
             return;
         } 
         fs.read((char*)&node, sizeof(Dot));
         if (fs.bad()) {
-            std::cerr << "Unable to read from file\n";
+            throw std::logic_error("Unable to read from file"); 
             return;
         } 
         Figure* f;
@@ -71,30 +70,30 @@ void Editor::saveDoc(std::ofstream& fs) {
         }
         fs.write((char*)&charType, sizeof(char));
         if (fs.bad()) {
-            std::cerr << "Unable to write in file\n";
+            throw std::logic_error("Unable to write in file");
             return;
         } 
         fs.write((char*)&center, sizeof(Dot));
         if (fs.bad()) {
-            std::cerr << "Unable to write in file\n";
+            throw std::logic_error("Unable to write in file");
             return;
         }
         fs.write((char*)&dots[0], sizeof(Dot));
         if (fs.bad()) {
-            std::cerr << "Unable to write in file\n";
+            throw std::logic_error("Unable to write in file");
             return;
         }   
     }
     char endOfFile = 'E';
     fs.write((char*)&endOfFile, sizeof(char));
     if (fs.bad()) {
-        std::cerr << "Unable to write in file\n";
+        throw std::logic_error("Unable to write in file");
         return;
     } 
 } 
 void Editor::createPrimitive(std::istream& is, char type) {
     if (docs.empty()) {
-        // ошибка
+        throw std::logic_error("There are no any documents in editor");
         return;
     }
     Figure* f;
@@ -114,12 +113,12 @@ void Editor::createPrimitive(std::istream& is, char type) {
 }
 void Editor::deletePrimitive() {
     if (docs.empty()) {
-        // ошибка
+        throw std::logic_error("There are no any documents in editor");
         return;
     }
-    size_t lastIdx = docs[page].size() - 1;
+    int lastIdx = docs[page].size() - 1;
     if (lastIdx < 0) {
-        // ошибка
+        throw std::logic_error("There are no any figures in document");
         return;
     }
     Figure* f = docs[page][lastIdx];
@@ -132,7 +131,7 @@ void Editor::deletePrimitive() {
 }
 void Editor::print() {
     if (docs.empty()) {
-        std::cout << "There are no any documents\n";
+        throw std::logic_error("There are no any documents in editor");
         return;
     }
     std::cout << "=========================DOCUMENT===========================\n";
@@ -145,6 +144,10 @@ void Editor::print() {
     std::cout << "======================END=OF=DOCUMENT=======================\n";
 }
 bool Editor::undo() {
+    if (docs.empty()) {
+        throw std::logic_error("There are no any documents in editor");
+        return false;
+    }
     if (saved[page].type == 'u') {
         return false;
     }
@@ -160,9 +163,9 @@ bool Editor::undo() {
     }
     return true;
 }
-void Editor::switchDoc(size_t newPage) {
-    if (newPage < 0 && newPage >= docs.size()) {
-        // ошибка
+void Editor::switchDoc(int newPage) {
+    if (newPage < 0 || newPage >= docs.size()) {
+        throw std::logic_error("Page number is invalid");
         return;
     }
     page = newPage;

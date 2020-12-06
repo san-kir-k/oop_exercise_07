@@ -48,7 +48,12 @@ void mainLoop() {
                     std::cerr << "ERROR: Unable to open file " << filename << " in read mode\n";
                     break;
                 }
-                ed.loadDoc(ifs);
+                try {
+                    ed.loadDoc(ifs);
+                } catch (std::logic_error& e) {
+                    std::cerr << "ERROR: " << e.what() << "\n";
+                    continue;
+                }
                 ifs.close();
                 break;
             case 3:
@@ -58,20 +63,40 @@ void mainLoop() {
                     std::cerr << "ERROR: Unable to open file " << filename << " in write mode\n";
                     break;
                 }
-                ed.saveDoc(ofs);
+                try {
+                    ed.saveDoc(ofs);
+                } catch (std::logic_error& e) {
+                    std::cerr << "ERROR: " << e.what() << "\n";
+                    continue;
+                }
                 ofs.close();
                 break;
             case 4:
                 std::cin >> type;
                 switch (type) {
                     case 1:
-                        ed.createPrimitive(std::cin, 'O');
+                        try {
+                            ed.createPrimitive(std::cin, 'O');
+                        } catch (std::logic_error& e) {
+                            std::cerr << "ERROR: " << e.what() << "\n";
+                            continue;
+                        }
                         break;
                     case 2:
-                        ed.createPrimitive(std::cin, 'S');
+                        try {
+                            ed.createPrimitive(std::cin, 'S');
+                        } catch (std::logic_error& e) {
+                            std::cerr << "ERROR: " << e.what() << "\n";
+                            continue;
+                        }
                         break;
                     case 3:
-                        ed.createPrimitive(std::cin, 'T');
+                        try {
+                            ed.createPrimitive(std::cin, 'T');
+                        } catch (std::logic_error& e) {
+                            std::cerr << "ERROR: " << e.what() << "\n";
+                            continue;
+                        }
                         break;
                     default:
                         std::cout << "Invalid type." << std::endl;
@@ -79,17 +104,39 @@ void mainLoop() {
                 }
                 break;
             case 5:
-                ed.deletePrimitive();
+                try {
+                    ed.deletePrimitive();
+                } catch (std::logic_error& e) {
+                    std::cerr << "ERROR: " << e.what() << "\n";
+                    continue;
+                }
                 break;
             case 6:
-                ed.print();
+                try { 
+                    ed.print();
+                } catch (std::logic_error& e) {
+                    std::cerr << "ERROR: " << e.what() << "\n";
+                    continue;
+                }
                 break;
             case 7:
-                ed.undo();
+                try {
+                    if (!ed.undo()) {
+                        std::cout << "Unable to do undo.\n";
+                    }
+                } catch (std::logic_error& e) {
+                    std::cerr << "ERROR: " << e.what() << "\n";
+                    continue;
+                }
                 break;
             case 8:
                 std::cin >> idx;
-                ed.switchDoc(idx);
+                try {
+                    ed.switchDoc(idx);
+                } catch (std::logic_error& e) {
+                    std::cerr << "ERROR: " << e.what() << "\n";
+                    continue;
+                }
                 break;
             case 9:
                 help();
